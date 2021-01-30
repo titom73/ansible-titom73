@@ -1,0 +1,212 @@
+---
+{% set variables = namespace() %}
+{% for host in groups[netbox_fabric_group] %}
+{%     if loop.first %}
+{%          set variables.data = hostvars[host] %}
+{%      endif %}
+{% endfor %}
+{% for host in groups[netbox_svc_group] %}
+{%     if loop.first %}
+{%          set variables.svc_data = hostvars[host] %}
+{%      endif %}
+{% endfor %}
+{% set variables.platform = [] %}
+{% set variables.roles = [] %}
+{% set variables.ip_addresses = [] %}
+{% if variables.data.spine is arista.avd.defined %}
+{%      do variables.roles.append('spine')%}
+{%      do variables.platform.append(variables.data.spine.platform)%}
+{%      for node in variables.data.spine.nodes %}
+{%          if variables.data.spine.nodes[node].mgmt_ip is arista.avd.defined %}
+{%              do variables.ip_addresses.append(variables.data.spine.nodes[node].mgmt_ip)%}
+{%          endif %}
+{%      endfor %}
+{% endif %}
+{% if variables.data.l3leaf is arista.avd.defined %}
+{%      do variables.roles.append('l3leaf')%}
+{%      do variables.platform.append(variables.data.l3leaf.defaults.platform)%}
+{%      for node_group in variables.data.l3leaf.node_groups %}
+{%          if variables.data.l3leaf.node_groups[node_group].platform is arista.avd.defined %}
+{%              do variables.platform.append(variables.data.l3leaf.node_groups[node_group].platform) %}
+{%              for node in variables.data.l3leaf.node_groups[node_group].nodes %}
+{%                  if variables.data.l3leaf.node_groups[node_group].nodes[node].mgmt_ip is arista.avd.defined %}
+{%                      do variables.ip_addresses.append(variables.data.l3leaf.node_groups[node_group].nodes[node].mgmt_ip)%}
+{%                  endif %}
+{%              endfor %}
+{%          endif %}
+{%      endfor %}
+{% endif %}
+{% if variables.data.l2leaf is arista.avd.defined %}
+{%      do variables.roles.append('l2leaf')%}
+{%      do variables.platform.append(variables.data.l2leaf.defaults.platform)%}
+{%      for node_group in variables.data.l2leaf.node_groups %}
+{%          if variables.data.l2leaf.node_groups[node_group].platform is arista.avd.defined %}
+{%              do variables.platform.append(variables.data.l2leaf.node_groups[node_group].platform) %}
+{%              for node in variables.data.l2leaf.node_groups[node_group].nodes %}
+{%                  if variables.data.l2leaf.node_groups[node_group].nodes[node].mgmt_ip is arista.avd.defined %}
+{%                      do variables.ip_addresses.append(variables.data.l2leaf.node_groups[node_group].nodes[node].mgmt_ip)%}
+{%                  endif %}
+{%              endfor %}
+{%          endif %}
+{%      endfor %}
+{% endif %}
+{% if variables.ip_addresses is not none %}
+{%      set variables.mgmt_prefixes_temp = [] %}
+{%      set variables.mgmt_prefixes = [] %}
+{%      for address in variables.ip_addresses %}
+{%          set variables.temp = address | ansible.netcommon.ipaddr('network') + "/" + address | ansible.netcommon.ipaddr('prefix')|string %}
+{%          do variables.mgmt_prefixes_temp.append(variables.temp) %}
+{%      endfor %}
+{%      set variables.mgmt_prefixes = variables.mgmt_prefixes_temp|unique %}
+{% endif %}
+### Netbox default entries
+
+# defaults file for eos_netbox_provisioner
+site_list:
+  - name: Paris
+    time_zone: {{ variables.data.timezone | arista.avd.default('Europe/Paris') }}
+    status: Active
+
+manufacturers:  # In alphabetical order
+  - Arista
+
+device_types:
+{% for platform in variables.platform | unique %}
+  - model: "{{ platform }}"
+    manufacturer: "Arista"
+    slug: "{{ platform | lower }}"
+    part_number: "{{ platform | lower }}"
+{%      if platform | lower == "veos-lab" %}
+    full_depth: False
+{%      else %}
+    full_depth: True
+{%      endif %}
+{% endfor %}
+
+platforms:
+  - name: "EOS"
+    slug: "eos"
+
+vrfs:
+  - name: MGMT
+    enforce_unique: true
+    description: Out Of Band Management VRF
+  - name: default
+    enforce_unique: true
+    description: Default routing table
+{% for tenant in variables.svc_data.tenants %}
+{%   if variables.svc_data.tenants[tenant].vrfs is arista.avd.defined %}
+{%      for vrf in variables.svc_data.tenants[tenant].vrfs %}
+  - name: "{{ vrf }}"
+    enforce_unique: false
+    description: "VRF for tenant {{ tenant }}"
+{%      endfor %}
+{%   endif %}
+{% endfor %}
+
+
+device_roles:
+{% for role in variables.roles | unique %}
+  - name: {{ role | upper }}
+    slug: {{ role | lower }}
+    color: 6b8e23
+{% endfor %}
+
+devices:
+{% for device in variables.data.spine.nodes %}
+  - name: {{ device }}
+    device_type: {{ variables.data.spine.platform }}
+    platform: EOS
+    serial: {{ variables.data.spine.nodes[device].mac_address | arista.avd.default('UNSET') }}
+    status: Active
+    device_role: SPINE
+    site: Paris
+    management_name: "{{ mgmt_interface }}"
+    management_form_factor: "Virtual"
+{% endfor %}
+{% if variables.data.l3leaf is arista.avd.defined %}
+{%  for node_group in variables.data.l3leaf.node_groups %}
+{%      for device in variables.data.l3leaf.node_groups[node_group].nodes %}
+  - name: {{ device }}
+    device_type: {{ variables.data.spine.platform }}
+    platform: EOS
+    serial: {{ variables.data.l3leaf.node_groups[node_group].nodes[device].mac_address | arista.avd.default('UNSET') }}
+    status: Active
+    device_role: L3LEAF
+    site: Paris
+    management_name: "{{ mgmt_interface }}"
+    management_form_factor: "Virtual"
+{%      endfor %}
+{%  endfor %}
+{% endif %}
+{% if variables.data.l2leaf is arista.avd.defined %}
+{%  for node_group in variables.data.l2leaf.node_groups %}
+{%      for device in variables.data.l2leaf.node_groups[node_group].nodes %}
+  - name: {{ device }}
+    device_type: {{ variables.data.spine.platform }}
+    platform: EOS
+    serial: {{ variables.data.l2leaf.node_groups[node_group].nodes[device].mac_address | arista.avd.default('UNSET') }}
+    status: Active
+    device_role: L2LEAF
+    site: Paris
+    management_name: "{{ mgmt_interface }}"
+    management_form_factor: "Virtual"
+{%      endfor %}
+{%  endfor %}
+{% endif %}
+
+
+prefixes:
+{% if variables.mgmt_prefixes is arista.avd.defined %}
+{%      for prefix in variables.mgmt_prefixes %}
+  - prefix: "{{ prefix }}"
+    vrf: {{ mgmt_vrf }}
+    description: "Out of band Management network"
+{%      endfor %}
+{% endif %}
+  - prefix: "{{ variables.data.underlay_p2p_network_summary }}"
+    vrf: default
+    description: "Underlay point to point network"
+  - prefix: "{{ variables.data.overlay_loopback_network_summary }}"
+    vrf: default
+    description: "Underlay Loopback0 network"
+  - prefix: "{{ variables.data.vtep_loopback_network_summary }}"
+    vrf: default
+    description: "Loopback01/VTEP network"
+  - prefix: "{{ variables.data.mlag_ips.leaf_peer_l3 }}"
+    vrf: default
+    description: "MLAG Peer L3 network"
+  - prefix: "{{ variables.data.mlag_ips.mlag_peer }}"
+    vrf: default
+    description: "Underlay MLAG peer network"
+
+management_ips:
+{% for device in variables.data.spine.nodes %}
+  - address: "{{ variables.data.spine.nodes[device].mgmt_ip }}"
+    vrf: {{ mgmt_vrf }}
+    assigned_object:
+      name: "{{ mgmt_interface }}"
+      device: "{{ device }}"
+{% endfor %}
+{% if variables.data.l3leaf is arista.avd.defined %}
+{%  for node_group in variables.data.l3leaf.node_groups %}
+{%      for device in variables.data.l3leaf.node_groups[node_group].nodes %}
+  - address: "{{ variables.data.l3leaf.node_groups[node_group].nodes[device].mgmt_ip }}"
+    vrf: {{ mgmt_vrf }}
+    assigned_object:
+      name: "{{ mgmt_interface }}"
+      device: "{{ device }}"
+{%      endfor %}
+{%  endfor %}
+{% endif %}
+{% if variables.data.l2leaf is arista.avd.defined %}
+{%  for node_group in variables.data.l2leaf.node_groups %}
+{%      for device in variables.data.l2leaf.node_groups[node_group].nodes %}
+  - address: "{{ variables.data.l2leaf.node_groups[node_group].nodes[device].mgmt_ip }}"
+    vrf: {{ mgmt_vrf }}
+    assigned_object:
+      name: "{{ mgmt_interface }}"
+      device: "{{ device }}"
+{%      endfor %}
+{%  endfor %}
+{% endif %}

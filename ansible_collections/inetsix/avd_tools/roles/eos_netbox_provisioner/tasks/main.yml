@@ -1,0 +1,49 @@
+---
+# tasks file for eos_netbox_provisioner
+- name: Generate netbox configuration in structured format (yaml).
+  template:
+    src: "netbox.yml.j2"
+    dest: '{{ root_dir }}/intended/structured_configs/netbox/fabric.yml'
+  delegate_to: localhost
+  run_once: true
+  check_mode: no
+  changed_when: False
+  tags: [build, provision]
+
+- name: Include device intended structure configuration variables
+  include_vars: '{{ root_dir }}/intended/structured_configs/netbox/fabric.yml'
+  run_once: true
+  delegate_to: localhost
+  tags: [build, provision]
+
+# If state=present launch creation/update process
+# If state=absent launch deletion process
+- name: Start creation/update process.
+  run_once: true
+  tags: [provision, online]
+  include_tasks: "./fabric-{{ netbox_state }}.yml"
+
+#################################################
+
+- name: Include device intended structure configuration variables
+  include_vars: '{{ root_dir }}/intended/structured_configs/{{ inventory_hostname}}.yml'
+  delegate_to: localhost
+  tags: [build, provision]
+
+- name: Generate netbox configuration per device in structured format (yaml).
+  template:
+    src: "netbox_device.yml.j2"
+    dest: '{{ root_dir }}/intended/structured_configs/netbox/{{ inventory_hostname}}.yml'
+  delegate_to: localhost
+  check_mode: no
+  changed_when: False
+  tags: [build, provision]
+
+- name: Include device intended structure configuration variables
+  include_vars: '{{ root_dir }}/intended/structured_configs/netbox/{{ inventory_hostname}}.yml'
+  delegate_to: localhost
+  tags: [build, provision]
+
+- name: Start creation/update process.
+  tags: [provision, online]
+  include_tasks: "./devices-{{ netbox_state }}.yml"
