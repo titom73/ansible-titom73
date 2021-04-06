@@ -1,0 +1,50 @@
+---
+name: {{ fabric_name }}
+
+mgmt:
+  network: 'mgmt_{{fabric_name}}'
+  ipv4_subnet: {{ mgmt_network_v4 }}
+
+topology:
+  nodes:
+{% for node in spine.nodes %}
+    {{ node }}:
+      image: {{ceos_version}}
+      mgmt_ipv4: {{ spine.nodes[node].mgmt_ip }}
+      kind: ceos
+      config: '{{ inventory_dir }}/intended/configs/'
+{% endfor %}
+{% for node_group in l3leaf.node_groups %}
+{%     for node in l3leaf.node_groups[node_group].nodes %}
+    {{ node }}:
+      image: {{ceos_version}}
+      mgmt_ipv4: {{l3leaf.node_groups[node_group].nodes[node].mgmt_ip}}
+      kind: ceos
+      config: '{{ inventory_dir }}/intended/configs/'
+{%     endfor %}
+{% endfor %}
+
+  links:
+    # L3LEAFs to SPINEs
+{% for node_group in l3leaf.node_groups %}
+{%     for node in l3leaf.node_groups[node_group].nodes %}
+{%         for spine_interface in l3leaf.node_groups[node_group].nodes[node].spine_interfaces %}
+{%             set uplink_to_spine_interfaces = l3leaf.node_groups[node_group].nodes[node].uplink_to_spine_interfaces | inetsix.avd_tools.default( l3leaf.node_groups[node_group].uplink_to_spine_interfaces, l3leaf.defaults.uplink_to_spine_interfaces ) %}
+{%             set spines = l3leaf.node_groups[node_group].nodes[node].spines | inetsix.avd_tools.default( l3leaf.node_groups[node_group].spines, l3leaf.defaults.spines ) %}
+    - endpoints: ["{{ node }}:{{ uplink_to_spine_interfaces[loop.index0] }}", "{{ spines[ loop.index0 ] }}:{{ spine_interface | replace('Ethernet', 'eth') }}"]
+{%         endfor %}
+{%     endfor %}
+{% endfor %}
+    # MLAG L3LEAFs
+{% for node_group in l3leaf.node_groups %}
+{%     for node in l3leaf.node_groups[node_group].nodes %}
+{%        if loop.index == 1 and l3leaf.node_groups[node_group].nodes | length > 1 %}
+{%             set mlag_peer = loop.nextitem %}
+{%             set mlag_interfaces = l3leaf.node_groups[node_group].nodes[node].mlag_interfaces | inetsix.avd_tools.default( l3leaf.node_groups[node_group].mlag_interfaces, l3leaf.defaults.mlag_interfaces ) %}
+{%             set mlag_remote_interfaces = l3leaf.node_groups[node_group].nodes[mlag_peer].mlag_interfaces | inetsix.avd_tools.default( l3leaf.node_groups[node_group].mlag_interfaces, l3leaf.defaults.mlag_interfaces ) %}
+{%             for mlag_interface in mlag_interfaces %}
+    - endpoints: ["{{ node }}:{{ mlag_interface | replace('Ethernet', 'eth') }}", "{{ mlag_peer }}:{{ mlag_remote_interfaces[loop.index0] | replace('Ethernet', 'eth') }}"]
+{%             endfor %}
+{%         endif %}
+{%     endfor %}
+{% endfor %}

@@ -60,26 +60,46 @@ fabric_interface_ips:
       device: "{{ inventory_hostname }}"
 {%      endif %}
 {% endfor %}
+
+loopback_ips:
+{% for interface in loopback_interfaces | arista.avd.default([]) %}
+{%      if loopback_interfaces[interface].ip_address is arista.avd.defined and interface == "Loopback0" %}
+  - address: "{{ loopback_interfaces[interface].ip_address }}"
+    vrf: "{{ loopback_interfaces[interface].vrf | arista.avd.default("default") }}"
+    role: "Loopback"
+    assigned_object:
+      name: "{{ interface }}"
+      device: "{{ inventory_hostname }}"
+{%      endif %}
+{% endfor %}
+
+vtep_ips:
+{% for interface in loopback_interfaces | arista.avd.default([]) %}
+{%      if loopback_interfaces[interface].ip_address is arista.avd.defined and interface == "Loopback1" %}
+  - address: "{{ loopback_interfaces[interface].ip_address }}"
+    vrf: "{{ loopback_interfaces[interface].vrf | arista.avd.default("default") }}"
+    role: "Anycast"
+    assigned_object:
+      name: "{{ interface }}"
+      device: "{{ inventory_hostname }}"
+{%      endif %}
+{% endfor %}
+
+anycast_ips:
 {% for interface in vlan_interfaces | arista.avd.default([]) %}
 {%      if vlan_interfaces[interface].ip_address is arista.avd.defined %}
   - address: "{{ vlan_interfaces[interface].ip_address }}"
     vrf: "{{ vlan_interfaces[interface].vrf | arista.avd.default("default") }}"
+    role: "Anycast"
     assigned_object:
       name: "{{ interface }}"
       device: "{{ inventory_hostname }}"
 {%      endif %}
 {%      if vlan_interfaces[interface].ip_address_virtual is arista.avd.defined %}
   - address: "{{ vlan_interfaces[interface].ip_address_virtual }}"
+    role: "Anycast"
     vrf: "{{ vlan_interfaces[interface].vrf | arista.avd.default("default") }}"
-    assigned_object:
-      name: "{{ interface }}"
-      device: "{{ inventory_hostname }}"
-{%      endif %}
-{% endfor %}
-{% for interface in loopback_interfaces | arista.avd.default([]) %}
-{%      if loopback_interfaces[interface].ip_address is arista.avd.defined %}
-  - address: "{{ loopback_interfaces[interface].ip_address }}"
-    vrf: "{{ loopback_interfaces[interface].vrf | arista.avd.default("default") }}"
+    role: "Anycast"
     assigned_object:
       name: "{{ interface }}"
       device: "{{ inventory_hostname }}"
