@@ -11,6 +11,7 @@ Requirements
 Role Variables
 --------------
 
+- `containerlabs_configuration`: Location and name of the containerlabs configuration generated. (default: `{{ inventory_dir }}/containerlabs.yml`)
 - `ceos_version`: Version of cEOS to use for the topology (default: 4.25.2F)
 - `mgmt_network_v4`: Subnet for management IPs use for OOB
 
