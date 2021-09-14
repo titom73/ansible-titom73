@@ -2,7 +2,7 @@
 # tasks file for avd_to_containerlab
 - name: Generate containerlab topology
   template:
-    src: avd_v3_topology.yml.j2
-    dest: '{{ containerlabs_configuration }}'
+    src: topology.yml.j2
+    dest: '{{ containerlab_configuration }}'
   delegate_to: localhost
   run_once: true
