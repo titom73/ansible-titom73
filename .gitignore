@@ -12,3 +12,8 @@
 *.vsix
 
 *.retry
+
+.pytest*
+
+# Local ansible developement
+ansible_collections/inetsix/avd_tools/roles/eos_netbox_provisioner/
