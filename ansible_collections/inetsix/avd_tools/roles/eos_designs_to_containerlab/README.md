@@ -1,4 +1,4 @@
-# eos_designs to containerlab
+# Arista AVD eos_designs to containerlab
 
 **eos_designs_to_containerlab** is a role to build a [containerlab](https://containerlab.srlinux.dev/) topology from [Arista AVD](https://www.avd.sh) project
 
@@ -16,6 +16,7 @@ The following default variables are defined, and can be modified as desired:
 - `containerlabs_configuration`: Location and name of the containerlabs configuration generated. (default: `{{ inventory_dir }}/containerlabs.yml`)
 - `ceos_lab_version`: Version of cEOS to use for the topology (default: 4.25.2F)
 - `mgmt_network_v4`: Subnet for management IPs use for OOB
+- `eapi_base`: Base port to use to expose eAPI from containers. Uses `eapi_base` + `device_id` from `arista.avd.eos_designs`
 
 ```yaml
 # cEOS Image to use
@@ -26,12 +27,15 @@ mgmt_network_v4: 192.168.1.0/24
 
 # Default containerlabs configuration file generated
 containerlab_configuration: '{{ inventory_dir }}/containerlabs.yml'
+
+# Default port to generate eAPI port mapping: eapi_base + device_id
+eapi_base: 8000
 ```
 
 ## Requirements
 
 - Requirements are located here: [avd-requirements](../../README.md#Requirements)
-- **containerlab** in version `>=0.15.3`
+- [**containerlab**](https://containerlab.srlinux.dev/) in version `>=0.15.3`
 
 ```bash
 $ containerlab version
@@ -64,8 +68,9 @@ Here is a playbook example to use `arista.avd.eos_designs_to_containerlab`:
       import_role:
         name: arista.avd.eos_designs_to_containerlab
       vars:
-        mgmt_network_v4: 10.73.0.0/16
-        ceos_lab_version: arista/ceos:4.25.2F
+        mgmt_network_v4: 10.73.255.0/24
+        ceos_version: arista/ceos:4.27.1F
+        eapi_base: 8000
 ```
 
 ## License
