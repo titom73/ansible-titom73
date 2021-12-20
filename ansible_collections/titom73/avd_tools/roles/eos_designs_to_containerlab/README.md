@@ -66,7 +66,7 @@ Here is a playbook example to use `arista.avd.eos_designs_to_containerlab`:
   tasks:
     - name: 'Build a containerlab topolgy'
       import_role:
-        name: arista.avd.eos_designs_to_containerlab
+        name: titom73.avd_tools.eos_designs_to_containerlab
       vars:
         mgmt_network_v4: 10.73.255.0/24
         ceos_version: arista/ceos:4.27.1F

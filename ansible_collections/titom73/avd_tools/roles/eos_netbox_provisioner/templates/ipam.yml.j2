@@ -1,0 +1,24 @@
+{% set node_types = dict() %}
+{% for node_type_key in node_type_keys | arista.avd.default(['spine', 'l3leaf', 'l2leaf']) | arista.avd.natural_sort %}
+{%     if hostvars[inventory_hostname][node_type_key] is arista.avd.defined %}
+{%         do node_types.update({node_type_key: hostvars[inventory_hostname][node_type_key]}) %}
+{%     endif %}
+{% endfor %}
+---
+fabric_device_prefixes:
+{% for interface in ethernet_interfaces %}
+{%      if ethernet_interfaces[interface].ip_address is arista.avd.defined %}
+  - prefix: "{{ ethernet_interfaces[interface].ip_address | ansible.netcommon.ipaddr('network') }}/{{ ethernet_interfaces[interface].ip_address | ansible.netcommon.ipaddr('prefix') }}"
+    vrf: default
+{%      endif %}
+{% endfor %}
+{% for interface in vlan_interfaces | arista.avd.default([]) %}
+{%      if vlan_interfaces[interface].ip_address is arista.avd.defined %}
+  - prefix: "{{ vlan_interfaces[interface].ip_address | ansible.netcommon.ipaddr('network') }}/{{ vlan_interfaces[interface].ip_address | ansible.netcommon.ipaddr('prefix') }}"
+    vrf: {{ vlan_interfaces[interface].vrf | arista.avd.default("default") }}
+{%      endif %}
+{%      if vlan_interfaces[interface].ip_address_virtual is arista.avd.defined %}
+  - prefix: "{{ vlan_interfaces[interface].ip_address_virtual | ansible.netcommon.ipaddr('network') }}/{{ vlan_interfaces[interface].ip_address_virtual | ansible.netcommon.ipaddr('prefix') }}"
+    vrf: {{ vlan_interfaces[interface].vrf | arista.avd.default("default") }}
+{%      endif %}
+{% endfor %}

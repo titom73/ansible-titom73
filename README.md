@@ -1,12 +1,13 @@
 # Personal toolset for Arista AVD
 
-WIP
+List of ansible roles & modules to integrate [__Arista AVD__](https://www.avd.sh/en/devel/) in various environments
 
-## List of roles
+## List of available roles
 
-- [inetsix.avd_tools.eos_netbox_provisioner](./ansible_collections/inetsix/avd_tools/roles/eos_netbox_provisioner/README.md)
-- [inetsix.avd_tools.eos_designs_to_containerlab](ansible_collections/inetsix/avd_tools/roles/eos_designs_to_containerlab)
+- [__EOS Designs to Containerlab__](ansible_collections/titom73/avd_tools/roles/eos_designs_to_containerlab): Generate [containerlab](https://containerlab.srlinux.dev/) topology from Arista AVD eos_designs.
 
 ## License
 
 Project is published under [Apache 2.0 License](LICENSE)
+
+> This repository is personal and not directly linked to any AVD effort.

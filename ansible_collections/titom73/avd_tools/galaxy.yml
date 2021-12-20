@@ -3,7 +3,7 @@
 # The namespace of the collection. This can be a company/brand/organization or product namespace under which all
 # content lives. May only contain alphanumeric characters and underscores. Additionally namespaces cannot start with
 # underscores or numbers and cannot contain consecutive underscores
-namespace: inetsix
+namespace: titom73
 
 # The name of the collection. Has the same character restrictions as 'namespace'
 name: avd_tools
@@ -26,7 +26,7 @@ description: Ansible Roles & Modules to play around Arista Validated Designs and
 
 # The path to the license file for the collection. This path is relative to the root of the collection. This key is
 # mutually exclusive with 'license'
-license_file: 'LICENSE'
+license: 'GPL-3.0-or-later'
 
 # A list of tags you want to associate with the collection for indexing/searching. A tag name has the same character
 # requirements as 'namespace' and 'name'
