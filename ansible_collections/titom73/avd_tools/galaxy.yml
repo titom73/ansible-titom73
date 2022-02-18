@@ -38,7 +38,6 @@ tags: ['arista', 'network', 'networking', 'eos', 'avd', 'cloudvision', 'cvp']
 # range specifiers can be set and are separated by ','
 dependencies:
     "arista.avd": "*"
-    "arista.cvp": "*"
     "arista.eos": "*"
     "netbox.netbox": "*"
     "ansible.netcommon": "*"

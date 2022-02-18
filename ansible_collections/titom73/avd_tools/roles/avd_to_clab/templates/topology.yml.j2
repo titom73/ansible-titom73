@@ -1,41 +1,73 @@
 {# HEADER -- LOGIC implementation #}
 {% set node_types = dict() %}
 {% for node_type_key in node_type_keys | arista.avd.default(['spine', 'l3leaf', 'l2leaf']) | arista.avd.natural_sort %}
+{# {{ node_type_key }} #}
 {%     if hostvars[inventory_hostname][node_type_key] is arista.avd.defined %}
 {%         do node_types.update({node_type_key: hostvars[inventory_hostname][node_type_key]}) %}
 {%     endif %}
 {% endfor %}
 {# CONTAINERLABS configuration rendering #}
 ---
-name: {{ fabric_name }}
+name: {{ fabric_name | lower | replace("_", "-") }}
 
 mgmt:
-  network: 'mgmt_{{fabric_name}}'
+  network: 'mgmt-{{fabric_name | lower | replace("_", "-") }}'
   ipv4_subnet: {{ mgmt_network_v4 }}
 
 {# NODES definition #}
 topology:
+  kinds:
+    ceos:
+      image: {{ceos_version}}
+{% if clab_kinds is defined %}
+{%     for clab_kind_name, clab_kind in clab_kinds.items() %}
+    {{ clab_kind_name }}:
+      {{ clab_kind | to_nice_yaml| trim | indent(6)}}
+{%     endfor %}
+{% endif %}
   nodes:
 {% for node_type in node_types | arista.avd.natural_sort %}
 {# --------------------- NODE GROUPS LIST --------------------- #}
 {%     for node_group in node_types[node_type]['node_groups'] | arista.avd.natural_sort %}
 {%         for node in node_types[node_type]['node_groups'][node_group]['nodes'] | arista.avd.natural_sort %}
     {{ node }}:
-      image: {{ceos_lab_version}}
-      mgmt_ipv4: {{ node_types[node_type]['node_groups'][node_group]['nodes'][node].mgmt_ip }}
+      image: {{ceos_version}}
+      mgmt_ipv4: {{ node_types[node_type]['node_groups'][node_group]['nodes'][node].mgmt_ip  | ansible.netcommon.ipaddr('address') }}
       kind: ceos
-      startup-config: {{ inventory_dir }}/intended/configs/{{node}}.cfg
+      startup-config: intended/configs/{{node}}.cfg
+      ports:
+{%    if hostvars[node].ansible_port is arista.avd.defined and hostvars[node].ansible_port %}
+        - {{ hostvars[node].ansible_port }}:443/tcp
+{%    else %}
+        - {{ eapi_base + node_types[node_type]['nodes'][node].id }}:443/tcp
+{%    endif %}
+      env:
+        TMODE: lacp
 {%         endfor %}
 {%     endfor %}
 {# --------------------- FLAT NODES LIST --------------------- #}
 {%     for node in node_types[node_type]['nodes'] | arista.avd.natural_sort %}
     {{ node }}:
-      image: {{ceos_lab_version}}
-      mgmt_ipv4: {{ node_types[node_type]['nodes'][node].mgmt_ip }}
+      image: {{ceos_version}}
+      mgmt_ipv4: {{ node_types[node_type]['nodes'][node].mgmt_ip  | ansible.netcommon.ipaddr('address') }}
       kind: ceos
-      startup-config: {{ inventory_dir }}/intended/configs/{{node}}.cfg
+      startup-config: intended/configs/{{node}}.cfg
+      ports:
+{%    if hostvars[node].ansible_port is arista.avd.defined and hostvars[node].ansible_port != 443 %}
+        - {{ hostvars[node].ansible_port }}:443/tcp
+{%    else %}
+        - {{ eapi_base + node_types[node_type]['nodes'][node].id }}:443/tcp
+{%    endif %}
+      env:
+        TMODE: lacp
 {%     endfor %}
 {% endfor %}
+{% if clab_nodes is defined %}
+{%     for clab_node_name, clab_node in clab_nodes.items() %}
+    {{ clab_node_name }}:
+      {{ clab_node | to_nice_yaml| trim | indent(6)}}
+{%     endfor %}
+{% endif %}
 
 {# LINKS definition #}
   links:
@@ -47,7 +79,7 @@ topology:
 {%             for uplink_switch_interface in node_types[node_type]['node_groups'][node_group]['nodes'][node].uplink_switch_interfaces %}
 {%                 set uplink_interfaces = node_types[node_type]['node_groups'][node_group]['nodes'][node].uplink_interfaces | arista.avd.default( node_types[node_type]['node_groups'][node_group].uplink_interfaces, node_types[node_type].defaults.uplink_interfaces ) %}
 {%                 set uplink_switches = node_types[node_type]['node_groups'][node_group]['nodes'].uplink_switches | arista.avd.default( node_types[node_type]['node_groups'][node_group].uplink_switches, node_types[node_type].defaults.uplink_switches ) %}
-    - endpoints: ["{{ node }}:{{ uplink_interfaces[loop.index0] }}", "{{ uplink_switches[ loop.index0 ] }}:{{ uplink_switch_interface | replace('Ethernet', 'eth') }}"]
+    - endpoints: ["{{ node }}:{{ uplink_interfaces[loop.index0]| replace('Ethernet', 'eth')  }}", "{{ uplink_switches[ loop.index0 ] }}:{{ uplink_switch_interface | replace('Ethernet', 'eth') }}"]
 {%                 endfor %}
 {# - End Uplink Interfaces #}
 {# - MLAG interfaces #}
@@ -66,8 +98,13 @@ topology:
 {%     for node in node_types[node_type]['nodes'] | arista.avd.natural_sort %}
 {%         for uplink_switch_interface in node_types[node_type]['nodes'][node].uplink_switch_interfaces | arista.avd.natural_sort %}
 {%             set uplink_interfaces = node_types[node_type]['nodes'][node].uplink_interfaces | arista.avd.default( node_types[node_type].uplink_interfaces, node_types[node_type].defaults.uplink_interfaces ) %}
-{%             set uplink_switches = node_types[node_type]['nodes'].uplink_switches | arista.avd.default( node_types[node_type].uplink_switches, node_types[node_type].defaults.uplink_switches ) %}
-    - endpoints: ["{{ node }}:{{ uplink_interfaces[loop.index0] }}", "{{ uplink_switches[ loop.index0 ] }}:{{ uplink_switch_interface | replace('Ethernet', 'eth') }}"]
+{%             set uplink_switches = node_types[node_type]['nodes'][node].uplink_switches | arista.avd.default( node_types[node_type]['nodes'].uplink_switches, node_types[node_type].defaults.uplink_switches ) %}
+    - endpoints: ["{{ node }}:{{ uplink_interfaces[loop.index0] | replace('Ethernet', 'eth')}}", "{{ uplink_switches[ loop.index0 ] }}:{{ uplink_switch_interface | replace('Ethernet', 'eth') }}"]
 {%         endfor %}
 {%     endfor %}
 {% endfor %}
+{% if clab_links is defined %}
+{%     for clab_link in clab_links %}
+    - {{ clab_link | to_yaml}}
+{%-    endfor %}
+{% endif %}
