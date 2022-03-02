@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo "Jumphost Remote access configuration"
+
+_EAPI_PORT='{{ eapi_port }}'
+_SRC_IF='{{ incoming_interface }}'
+_DST_IF='{{ eos_oob_interface }}'
+
+echo '* Activate kernel routing'
+sysctl -w net.ipv4.ip_forward=1
+
+echo '* Flush Current IPTables settings'
+iptables --flush
+iptables --delete-chain
+iptables --table nat --flush
+iptables --table nat --delete-chain
+
+echo '* Activate default forwarding'
+
+iptables -P FORWARD ACCEPT
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+
+echo '* Activate masquerading'
+
+iptables -t nat -A POSTROUTING -o {{ incoming_interface }} -j MASQUERADE
+iptables -t nat -A POSTROUTING -o {{ eos_oob_interface }} -j MASQUERADE
+
+echo '* Activate eAPI forwarding with base port 800x'
+
+{% for host in groups[eos_group] %}
+iptables -t nat -A PREROUTING -p tcp -i {{ incoming_interface }} --dport  {{ hostvars[host]['ansible_port'] }} -j DNAT --to-destination {{ hostvars[host]['ansible_host'] }}:{{ eapi_port }}
+{% endfor %}
+
+iptables -A FORWARD -p tcp -d 10.73.254.0/24 --dport ${_EAPI_PORT} -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+echo "-> Configuration done"

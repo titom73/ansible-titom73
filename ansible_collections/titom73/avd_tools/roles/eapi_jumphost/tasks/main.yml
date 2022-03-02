@@ -1,0 +1,9 @@
+---
+# tasks file for eapi_jumphost
+# tasks file for avd_to_containerlab
+- name: Generate iptables configuration scrip
+  template:
+    src: expose_eapi.sh.j2
+    dest: '{{ iptables_script_name }}'
+  delegate_to: localhost
+  run_once: true

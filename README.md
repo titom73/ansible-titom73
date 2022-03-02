@@ -4,7 +4,8 @@ List of ansible roles & modules to integrate [__Arista AVD__](https://www.avd.sh
 
 ## List of available roles
 
-- [__EOS Designs to Containerlab__](ansible_collections/titom73/avd_tools/roles/eos_designs_to_containerlab): Generate [containerlab](https://containerlab.srlinux.dev/) topology from Arista AVD eos_designs.
+- [__EOS Designs to Containerlab__](ansible_collections/titom73/avd_tools/roles/avd_to_clab): Generate [containerlab](https://containerlab.srlinux.dev/) topology from Arista AVD eos_designs.
+- [__iptables script to expose eAPI via a Jumphost__](ansible_collections/titom73/avd_tools/roles/eapi_jumphost): Role to generate an iptables script that expose Arista eAPI ports by using D-NAT.
 
 ## License
 

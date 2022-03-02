@@ -1,0 +1,13 @@
+---
+# defaults file for eapi_jumphost
+
+eos_group: eos_devices
+
+# Ethernet Interface name to use
+incoming_interface: "ens3"
+eos_oob_interface: "ens4"
+
+# EAPI port to use as EOS destination
+eapi_port: '443'
+
+iptables_script_name: "{{ inventory_dir }}/eapi.iptables.sh"
