@@ -1,38 +1,75 @@
-Role Name
-=========
+# Expose eAPI via IPTABLES
 
-A brief description of the role goes here.
+__inetsix.avd_tools.eapi_jumphost__ is a role that build an iptables script to expose eAPI port of all Arista nodes on a Jumphost by using destination NAT.
 
-Requirements
-------------
+It takes exposed ports from `ansible_port` configured in your inventory as it is ports you will use to push your changes.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+## Requirements
 
-Role Variables
---------------
+No specific requirement to install other than AVD.
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+## Role variables
 
-Dependencies
-------------
+- `eos_group`: Name of the group to look for Arista EOS devices. (default: `eos_devices`)
+- `incoming_interface`: Interface name from where requests will come. (default: `ens3`)
+- `eos_oob_interface`: Interface connected to Arista Out Of Band management. (default: `ens4`)
+- `eapi_port`: Port used by eAPI on Arista switch. (default: `443`)
+- `iptables_script_name`: Name of the generated script. (default: `{{ inventory_dir }}/eapi.iptables.sh`)
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+## Example
 
-Example Playbook
-----------------
+### Inventory file
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+---
+eos_devices:
+  children:
+    tooling:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+tooling:
+  hosts:
+    my_node:
+      ansible_port: 8001
+      ansible_host: 10.126.51.251
+      type: unset
+```
 
-License
--------
+### Script output
 
-BSD
+```bash
+#!/bin/bash
 
-Author Information
-------------------
+echo "Jumphost Remote access configuration"
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+_EAPI_PORT='443'
+_SRC_IF='ens3'
+_DST_IF='ens4'
+
+echo '* Activate kernel routing'
+sysctl -w net.ipv4.ip_forward=1
+
+echo '* Flush Current IPTables settings'
+iptables --flush
+iptables --delete-chain
+iptables --table nat --flush
+iptables --table nat --delete-chain
+
+echo '* Activate default forwarding'
+
+iptables -P FORWARD ACCEPT
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+
+echo '* Activate masquerading'
+
+iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
+iptables -t nat -A POSTROUTING -o ens4 -j MASQUERADE
+
+echo '* Activate eAPI forwarding with base port 800x'
+
+iptables -t nat -A PREROUTING -p tcp -i ens3 --dport  8001 -j DNAT --to-destination 10.126.51.251:443
+
+iptables -A FORWARD -p tcp -d 10.73.254.0/24 --dport ${_EAPI_PORT} -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+echo "-> Configuration done"
+```
