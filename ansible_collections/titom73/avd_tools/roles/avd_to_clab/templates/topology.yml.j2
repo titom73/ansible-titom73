@@ -35,6 +35,10 @@ topology:
       mgmt_ipv4: {{ node_types[node_type]['node_groups'][node_group]['nodes'][node].mgmt_ip  | ansible.netcommon.ipaddr('address') }}
       kind: ceos
       startup-config: intended/configs/{{node}}.cfg
+{%    if fs_inotify_fix is true %}
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+{%    endif %}
       ports:
 {%    if hostvars[node].ansible_port is arista.avd.defined and hostvars[node].ansible_port %}
         - {{ hostvars[node].ansible_port }}:443/tcp
@@ -52,6 +56,10 @@ topology:
       mgmt_ipv4: {{ node_types[node_type]['nodes'][node].mgmt_ip  | ansible.netcommon.ipaddr('address') }}
       kind: ceos
       startup-config: intended/configs/{{node}}.cfg
+{%    if fs_inotify_fix is true %}
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+{%    endif %}
       ports:
 {%    if hostvars[node].ansible_port is arista.avd.defined and hostvars[node].ansible_port != 443 %}
         - {{ hostvars[node].ansible_port }}:443/tcp

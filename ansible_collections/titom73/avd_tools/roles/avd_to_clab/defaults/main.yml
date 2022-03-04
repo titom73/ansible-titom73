@@ -9,3 +9,14 @@ mgmt_network_v4: 192.168.1.0/24
 
 # Default containerlabs configuration file generated
 containerlab_configuration: '{{ inventory_dir }}/containerlabs.yml'
+
+# Bind inotify settings for large topology
+# sudo sh -c 'echo "fs.inotify.max_user_instances = 50000" > /etc/sysctl.d/99-zceos.conf'
+# sudo sysctl -w fs.inotify.max_user_instances=50000
+# root@ubuntu20:/opt# sudo sysctl -a  | grep -i inotify
+# fs.inotify.max_queued_events = 262144
+# fs.inotify.max_user_instances = 50000
+# fs.inotify.max_user_watches = 512000
+# user.max_inotify_instances = 50000
+# user.max_inotify_watches = 512000
+fs_inotify_fix: False
