@@ -84,13 +84,13 @@ topology:
 {%     for node_group in node_types[node_type]['node_groups'] | arista.avd.natural_sort %}
 {%         for node in node_types[node_type]['node_groups'][node_group]['nodes'] | arista.avd.natural_sort %}
 {# UPLINK interfaces #}
-{%             for uplink_switch_interface in node_types[node_type]['node_groups'][node_group]['nodes'][node].uplink_switch_interfaces | arista.avd.natural_sort %}
-{%                 set uplink_interfaces = node_types[node_type]['node_groups'][node_group]['nodes'][node].uplink_switch_interfaces | arista.avd.default( node_types[node_type]['node_groups'][node_group].uplink_switch_interfaces, node_types[node_type].defaults.uplink_switch_interfaces ) %}
-{%                 set uplink_switches = node_types[node_type]['node_groups'][node_group]['nodes'].uplink_switches | arista.avd.default( node_types[node_type]['node_groups'][node_group].uplink_switches, node_types[node_type].defaults.uplink_switches ) %}
-{%                 if uplink_interfaces is arista.avd.defined() %}
+{%             if node_types[node_type]['node_groups'][node_group]['nodes'][node].uplink_switch_interfaces is arista.avd.defined %}
+{%                 for uplink_switch_interface in node_types[node_type]['node_groups'][node_group]['nodes'][node].uplink_switch_interfaces | arista.avd.natural_sort %}
+{%                     set uplink_interfaces = node_types[node_type]['node_groups'][node_group]['nodes'][node].uplink_interfaces | arista.avd.default( node_types[node_type]['node_groups'][node_group].uplink_interfaces, node_types[node_type].defaults.uplink_interfaces ) %}
+{%                     set uplink_switches = node_types[node_type]['node_groups'][node_group]['nodes'].uplink_switches | arista.avd.default( node_types[node_type]['node_groups'][node_group].uplink_switches, node_types[node_type].defaults.uplink_switches ) %}
     - endpoints: ["{{ node }}:{{ uplink_interfaces[loop.index0]| replace('Ethernet', 'eth')  }}", "{{ uplink_switches[ loop.index0 ] }}:{{ uplink_switch_interface | replace('Ethernet', 'eth') }}"]
-{%                 endif %}
-{%             endfor %}
+{%                 endfor %}
+{%             endif %}
 {# - End Uplink Interfaces #}
 {# - MLAG interfaces #}
 {%             if loop.index == 1 and node_types[node_type]['node_groups'][node_group]['nodes'] | length > 1 %}
