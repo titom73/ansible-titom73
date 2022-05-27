@@ -1,0 +1,100 @@
+l3leaf:
+  defaults:
+    platform: "{{ lab_platform }}"
+    loopback_ipv4_pool: 192.168.255.0/24
+    loopback_ipv4_offset: 2
+    vtep_loopback_ipv4_pool: 192.168.254.0/24
+    uplink_interfaces: ['Ethernet1', 'Ethernet2']
+    uplink_switches: ['avd-spine1', 'avd-spine2']
+    uplink_ipv4_pool: 172.31.255.0/24
+    evpn_route_servers: ['avd-rs01', 'avd-rs02']
+    mlag_peer_ipv4_pool: '{{default_mlag_peer_ipv4_pool}}'
+    mlag_peer_l3_ipv4_pool: '{{default_mlag_peer_l3_ipv4_pool}}'
+    mlag_interfaces: '{{ default_mlag_interfaces }}'
+    virtual_router_mac_address: '{{default_virtual_router_mac_address}}'
+    bgp_defaults: '{{ bgp_default_settings }}'
+    spanning_tree_priority: 4096
+    spanning_tree_mode: mstp
+  node_groups:
+    avd_leaf1:
+      bgp_as: 65101
+      filter:
+        tenants: [ 'tenant_a', 'tenant_b' ]
+        tags: [ 'pod01', 'dc1' ]
+      nodes:
+        avd-leaf1a:
+          id: 11
+          mgmt_ip: 10.73.254.11/24
+          uplink_switch_interfaces: [Ethernet1, Ethernet1]
+          mac_address: '0c:1d:c0:1d:62:11'
+        avd-leaf1b:
+          id: 12
+          mgmt_ip: 10.73.254.12/24
+          uplink_switch_interfaces: [Ethernet2, Ethernet2]
+          mac_address: '0c:1d:c0:1d:62:12'
+    avd_leaf2:
+      bgp_as: 65102
+      filter:
+        tenants: [ 'tenant_a', 'tenant_b' ]
+        tags: [ 'pod02', 'dc1' ]
+      nodes:
+        avd-leaf2a:
+          id: 13
+          mgmt_ip: 10.73.254.13/24
+          mac_address: '0c:1d:c0:1d:62:13'
+          uplink_switch_interfaces: [Ethernet3, Ethernet3]
+        avd-leaf2b:
+          id: 14
+          mgmt_ip: 10.73.254.14/24
+          mac_address: '0c:1d:c0:1d:62:14'
+          uplink_switch_interfaces: [Ethernet4, Ethernet4]
+    avd_leaf_esi:
+      mlag: false
+      filter:
+        tenants: [ 'tenant_a', 'tenant_b' ]
+        tags: [ 'pod03', 'dc1' ]
+      nodes:
+        avd-leaf3a:
+          id: 15
+          bgp_as: 65103
+          mgmt_ip: 10.73.254.17/24
+          mac_address: '0c:1d:c0:1d:62:17'
+          uplink_switch_interfaces: [Ethernet7, Ethernet7]
+        avd-leaf4a:
+          id: 16
+          bgp_as: 65104
+          mgmt_ip: 10.73.254.18/24
+          mac_address: '0c:1d:c0:1d:62:18'
+          uplink_switch_interfaces: [Ethernet8, Ethernet8]
+    avd_bl01:
+      bgp_as: 65105
+      filter:
+        tenants: [ 'tenant_a', 'tenant_b' ]
+        tags: [ 'border', 'dc1' ]
+      nodes:
+        avd-bl01a:
+          id: 17
+          mgmt_ip: 10.73.254.15/24
+          mac_address: '0c:1d:c0:1d:62:15'
+          uplink_switch_interfaces: [Ethernet5, Ethernet5]
+        avd-bl01b:
+          id: 18
+          mgmt_ip: 10.73.254.16/24
+          mac_address: '0c:1d:c0:1d:62:16'
+          uplink_switch_interfaces: [Ethernet6, Ethernet6]
+    avd_cl01:
+      bgp_as: 65106
+      filter:
+        tenants: [ 'tenant_a', 'tenant_b', 'central_routing_lab' ]
+        tags: [ 'pod05_node01', 'pod05_node02', 'dc1' ]
+      nodes:
+        avd-cl01a:
+          id: 19
+          mgmt_ip: 10.73.254.19/24
+          mac_address: '50:01:00:11:00:00'
+          uplink_switch_interfaces: [Ethernet9, Ethernet9]
+        avd-cl01b:
+          id: 20
+          mgmt_ip: 10.73.254.20/24
+          mac_address: '50:01:00:12:00:00'
+          uplink_switch_interfaces: [Ethernet10, Ethernet10]

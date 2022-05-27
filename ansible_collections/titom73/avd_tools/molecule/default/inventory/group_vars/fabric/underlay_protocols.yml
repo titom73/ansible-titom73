@@ -1,0 +1,15 @@
+# underlay_routing_protocol: isis
+# underlay_routing_protocol: ospf
+# overlay_routing_protocol: ibgp
+
+# AS Number to use when overlay_routing_protocol=ibgp
+bgp_as: 65000
+
+# ISIS Parameters when underlay_routing_protocol=ISIS
+isis_area_id: "49.0001"
+# isis_site_id: "0001"
+
+# OSPF Parameters when underlay_routing_protocol=OSPF
+underlay_ospf_process_id: 100
+underlay_ospf_area: 0.0.0.0
+underlay_ospf_max_lsa: 12000

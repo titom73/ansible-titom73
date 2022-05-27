@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: [avd]
+  tasks:
+    - name: build clab topology
+      delegate_to: 127.0.0.1
+      import_role:
+        name: titom73.avd_tools.avd_to_clab
+      vars:
+        mgmt_network_v4: "{{clab_management_network}}"
+        ceos_version: '{{clab_runner_eos}}'
+        # https://docs.google.com/document/d/1Q3-ccu2tCFn6FzOaGrERxSsFtImm9lmrxBfgsZvj8cI/edit#
+        fs_inotify_fix: True
+        containerlab_configuration: inventory/containerlabs.yml

@@ -1,0 +1,46 @@
+---
+servers:
+  srv-pod01:
+    rack: pod01
+    adapters:
+      - type: nic
+        server_ports: [Ethernet1]
+        switch_ports: [Ethernet3]
+        switches: [avd-agg01]
+        profile: all
+  srv-pod02:
+    rack: pod02
+    adapters:
+      - type: nic
+        server_ports: [Ethernet1]
+        switch_ports: [Ethernet3]
+        switches: [avd-agg02]
+        profile: all
+  srv-pod03:
+    rack: pod03
+    adapters:
+      - server_ports: [ Ethernet1, Ethernet2 ]
+        switch_ports: [ Ethernet5, Ethernet5 ]
+        switches: [ avd-leaf3a, avd-leaf4a ]
+        profile: all
+        port_channel:
+          state: present
+          description: portchanne1
+          mode: active
+          short_esi: '0303:0202:0101'
+  srv-pod05-23:
+    rack: pod05
+    adapters:
+      - type: nic
+        server_ports: [Ethernet1]
+        switch_ports: [Ethernet5]
+        switches: [avd-l2leaf01]
+        profile: all
+  srv-pod05-24:
+    rack: pod05
+    adapters:
+      - type: nic
+        server_ports: [Ethernet1]
+        switch_ports: [Ethernet5]
+        switches: [avd-l2leaf02]
+        profile: all

@@ -1,0 +1,27 @@
+route_server:
+  defaults:
+    platform: "{{ lab_platform }}"
+    loopback_ipv4_pool: 192.168.0.0/24
+    loopback_ipv4_offset: 1
+    uplink_interfaces: ['Ethernet1']
+    uplink_switch_interfaces: [Ethernet13]
+    # uplink_switches: ['avd-spine1']
+    uplink_ipv4_pool: 172.31.250.0/24
+    mlag: false
+    bgp_defaults: '{{bgp_default_settings}}'
+    bgp_as: 65000
+  nodes:
+    avd-rs01:
+      id: 25
+      mgmt_ip: 10.73.254.51/24
+      mac_address: '50:01:00:19:00:00'
+      uplink_interfaces: ['Ethernet1']
+      uplink_switch_interfaces: [Ethernet13]
+      uplink_switches: ['avd-spine1']
+    avd-rs02:
+      id: 26
+      mgmt_ip: 10.73.254.52/24
+      mac_address: '50:01:00:1a:00:00'
+      uplink_interfaces: ['Ethernet1']
+      uplink_switch_interfaces: [Ethernet13]
+      uplink_switches: ['avd-spine2']

@@ -1,0 +1,39 @@
+l2leaf:
+  defaults:
+    platform: "{{ lab_platform }}"
+    loopback_ipv4_pool: 192.168.253.0/24
+    loopback_ipv4_offset: 1
+    vtep_loopback_ipv4_pool: 192.168.252.0/24
+    uplink_interfaces: ['Ethernet1', 'Ethernet2']
+    uplink_switches: ['avd-spine1', 'avd-spine2']
+    uplink_ipv4_pool: 172.31.251.0/24
+    evpn_route_servers: ['avd-rs01', 'avd-rs02']
+    mlag_peer_ipv4_pool: 172.31.253.0/31
+    mlag_peer_l3_ipv4_pool: 172.31.253.2/31
+    mlag_interfaces: '{{ default_mlag_interfaces }}'
+    virtual_router_mac_address: '{{default_virtual_router_mac_address}}'
+    bgp_defaults: '{{bgp_default_settings}}'
+    spanning_tree_priority: 4096
+    spanning_tree_mode: mstp
+  node_groups:
+    avd_l2leaf1:
+      mlag: false
+      nodes:
+        avd-l2leaf01:
+          id: 21
+          bgp_as: 65107
+          mgmt_ip: 10.73.254.31/24
+          mac_address: '50:01:00:14:00:00'
+          uplink_switch_interfaces: [Ethernet11, Ethernet11]
+          filter:
+            tenants: [ 'tenant_a', 'tenant_b', 'central_routing_lab' ]
+            tags: [ 'pod05_node01' ]
+        avd-l2leaf02:
+          id: 22
+          bgp_as: 65108
+          mgmt_ip: 10.73.254.32/24
+          mac_address: '50:01:00:15:00:00'
+          uplink_switch_interfaces: [Ethernet12, Ethernet12]
+          filter:
+            tenants: [ 'tenant_a', 'tenant_b', 'central_routing_lab' ]
+            tags: [ 'pod05_node02' ]

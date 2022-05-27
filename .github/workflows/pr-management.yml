@@ -1,0 +1,37 @@
+name: PR Management
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  molecule:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario:
+          - default
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 'set environment variables'
+        run: |
+          echo "PY_COLORS=1" >> $GITHUB_ENV
+          echo "ANSIBLE_FORCE_COLOR=1" >> $GITHUB_ENV
+
+      - name: Run molecule action
+        uses: titom73/ansible-molecule-git@master
+        with:
+          molecule_parentdir: 'ansible_collections/titom73/avd_tools'
+          molecule_command: 'test'
+          molecule_args: '--scenario-name ${{ matrix.scenario }}'
+          pip_file: 'ansible_collections/titom73/avd_tools/requirements.txt'
+          galaxy_file: 'ansible_collections/titom73/avd_tools/requirements.yml'
+          check_git: true
+          check_git_enforced: false
