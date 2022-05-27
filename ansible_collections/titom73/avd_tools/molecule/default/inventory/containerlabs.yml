@@ -19,6 +19,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9021:443/tcp
+        - 7023:22/tcp
       env:
         TMODE: lacp
     avd-agg02:
@@ -30,6 +31,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9022:443/tcp
+        - 7024:22/tcp
       env:
         TMODE: lacp
     avd-l2leaf01:
@@ -41,6 +43,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9029:443/tcp
+        - 7021:22/tcp
       env:
         TMODE: lacp
     avd-l2leaf02:
@@ -52,6 +55,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9030:443/tcp
+        - 7022:22/tcp
       env:
         TMODE: lacp
     avd-bl01a:
@@ -63,6 +67,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9015:443/tcp
+        - 7017:22/tcp
       env:
         TMODE: lacp
     avd-bl01b:
@@ -74,6 +79,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9016:443/tcp
+        - 7018:22/tcp
       env:
         TMODE: lacp
     avd-cl01a:
@@ -85,6 +91,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9027:443/tcp
+        - 7019:22/tcp
       env:
         TMODE: lacp
     avd-cl01b:
@@ -96,6 +103,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9028:443/tcp
+        - 7020:22/tcp
       env:
         TMODE: lacp
     avd-leaf1a:
@@ -107,6 +115,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9011:443/tcp
+        - 7011:22/tcp
       env:
         TMODE: lacp
     avd-leaf1b:
@@ -118,6 +127,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9012:443/tcp
+        - 7012:22/tcp
       env:
         TMODE: lacp
     avd-leaf2a:
@@ -129,6 +139,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9013:443/tcp
+        - 7013:22/tcp
       env:
         TMODE: lacp
     avd-leaf2b:
@@ -140,6 +151,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9014:443/tcp
+        - 7014:22/tcp
       env:
         TMODE: lacp
     avd-leaf3a:
@@ -151,6 +163,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9017:443/tcp
+        - 7015:22/tcp
       env:
         TMODE: lacp
     avd-leaf4a:
@@ -162,6 +175,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9018:443/tcp
+        - 7016:22/tcp
       env:
         TMODE: lacp
     avd-rs01:
@@ -173,6 +187,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9033:443/tcp
+        - 10033:22/tcp
       env:
         TMODE: lacp
     avd-rs02:
@@ -184,6 +199,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9034:443/tcp
+        - 10034:22/tcp
       env:
         TMODE: lacp
     avd-spine1:
@@ -195,6 +211,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9001:443/tcp
+        - 10001:22/tcp
       env:
         TMODE: lacp
     avd-spine2:
@@ -206,6 +223,7 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
       ports:
         - 9002:443/tcp
+        - 10002:22/tcp
       env:
         TMODE: lacp
     srv-pod01:

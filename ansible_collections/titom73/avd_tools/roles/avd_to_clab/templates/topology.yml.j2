@@ -40,10 +40,17 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
 {%    endif %}
       ports:
+{# eAPI port mapping #}
+{%    if hostvars[node].ansible_httpapi_port is arista.avd.defined and hostvars[node].ansible_httpapi_port %}
+        - {{ hostvars[node].ansible_httpapi_port }}:443/tcp
+{%    elif node_types[node_type]['node_groups'][node_group]['nodes'].id is arista.avd.defined %}
+        - {{ eapi_base + node_types[node_type]['node_groups'][node_group]['nodes'].id }}:443/tcp
+{%    endif %}
+{# SSH port mapping #}
 {%    if hostvars[node].ansible_port is arista.avd.defined and hostvars[node].ansible_port %}
-        - {{ hostvars[node].ansible_port }}:443/tcp
-{%    else %}
-        - {{ eapi_base + node_types[node_type]['nodes'][node].id }}:443/tcp
+        - {{ hostvars[node].ansible_port }}:22/tcp
+{%    elif node_types[node_type]['node_groups'][node_group]['nodes'][node].id is arista.avd.defined %}
+        - {{ ssh_base + node_types[node_type]['node_groups'][node_group]['nodes'][node].id }}:22/tcp
 {%    endif %}
       env:
         TMODE: lacp
@@ -61,10 +68,17 @@ topology:
         - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
 {%    endif %}
       ports:
-{%    if hostvars[node].ansible_port is arista.avd.defined and hostvars[node].ansible_port != 443 %}
-        - {{ hostvars[node].ansible_port }}:443/tcp
-{%    else %}
+{# eAPI port mapping #}
+{%    if hostvars[node].ansible_httpapi_port is arista.avd.defined and hostvars[node].ansible_port != 443 %}
+        - {{ hostvars[node].ansible_httpapi_port }}:443/tcp
+{%    elif node_types[node_type]['nodes'][node].id is arista.avd.defined %}
         - {{ eapi_base + node_types[node_type]['nodes'][node].id }}:443/tcp
+{%    endif %}
+{# SSH port mapping #}
+{%    if hostvars[node].ansible_httpapi_port is arista.avd.defined and hostvars[node].ansible_port != 22 %}
+        - {{ hostvars[node].ansible_port }}:22/tcp
+{%    elif node_types[node_type]['nodes'][node].id is arista.avd.defined %}
+        - {{ ssh_base + node_types[node_type]['nodes'][node].id }}:22/tcp
 {%    endif %}
       env:
         TMODE: lacp

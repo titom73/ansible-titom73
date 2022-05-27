@@ -10,6 +10,12 @@ mgmt_network_v4: 192.168.1.0/24
 # Default containerlabs configuration file generated
 containerlab_configuration: '{{ inventory_dir }}/containerlabs.yml'
 
+# eAPI base port to compute dynamic eAPI port mapping
+eapi_base: 8000
+
+# SSH base port to compute dynamic SSH port mapping
+ssh_base: 7000
+
 # Bind inotify settings for large topology
 # sudo sh -c 'echo "fs.inotify.max_user_instances = 50000" > /etc/sysctl.d/99-zceos.conf'
 # sudo sysctl -w fs.inotify.max_user_instances=50000
