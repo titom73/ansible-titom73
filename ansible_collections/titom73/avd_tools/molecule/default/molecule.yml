@@ -31,6 +31,8 @@ provisioner:
     defaults:
       jinja2_extensions: 'jinja2.ext.loopcontrols,jinja2.ext.do,jinja2.ext.i18n'
       gathering: explicit
+    inventory:
+      enable_plugins: yaml
   inventory:
     links:
       hosts: 'inventory/inventory.yml'
@@ -52,3 +54,5 @@ verifier:
     defaults:
       jinja2_extensions: 'jinja2.ext.loopcontrols,jinja2.ext.do,jinja2.ext.i18n'
       gathering: explicit
+    inventory:
+      enable_plugins: yaml
