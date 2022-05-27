@@ -1,0 +1,27 @@
+# svi profile
+svi_profiles:
+  generic:
+    mtu: 1560
+    enabled: true
+  generic_full:
+    name: generic name
+    mtu: 1560
+    enabled: false
+    ip_address_virtual: 10.1.10.254/24
+  with_no_mtu:
+    enabled: true
+  with_dhcp_01_snooping:
+    enabled: true
+    ip_address_virtual: 10.1.11.254/24
+    igmp_snooping_enabled: false
+    ip_helpers:
+      1.1.1.1:
+        source_interface: lo100
+        source_vrf: test
+  with_dhcp_02:
+    tags: ['dc1']
+    enabled: true
+    ip_helpers:
+      1.1.1.1:
+        source_interface: lo100
+        source_vrf: mgmt

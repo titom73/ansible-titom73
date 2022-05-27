@@ -1,0 +1,130 @@
+---
+mlag_ibgp_peering_vrfs:
+  base_vlan: 3000
+
+evpn_rt_type:
+  # admin_subfield: < "leaf_asn" | "spine_asn" | "vni" | <0-65535> | <0-4294967295> | default -> "vni" >
+  admin_subfield: vni
+
+# dc1 tenants networks
+# documentation of tenant specific information - vlans/vrfs
+tenants:
+  # tenant a specific information - vrfs / vlans
+  tenant_a:
+    mac_vrf_vni_base: 10000
+    enable_mlag_ibgp_peering_vrfs: true
+    vrfs:
+      tenant_a_project01:
+        vrf_vni: 11
+        static_routes:
+          - destination_address_prefix: 1.1.1.0/24
+            gateway: 10.1.10.1
+            nodes: ['eapi-bl01a', 'eapi-bl01b']
+        redistribute_static: true
+        svis:
+          110:
+            name: 'pr01-demo'
+            tags: ['dc1']
+            enabled: true
+            ip_address_virtual: 10.1.10.254/24
+            # structured_config:
+            #   ipv6_enable: < true | false >
+            #   ipv6_address: < ipv6_address/mask >
+            #   ipv6_virtual_router_address: < ipv6_address/mask >
+
+            # igmp_snooping: false
+          111:
+            name: 'pr01-trust'
+            enabled: true
+            tags: ['pod01', 'pod02']
+            profile: 'with_dhcp_01_snooping'
+          112:
+            name: 'pr01-trust'
+            enabled: true
+            tags: ['pod01', 'pod02']
+            ip_address_virtual: 10.1.12.254/24
+            igmp_snooping_enabled: false
+          113:
+            name: 'pr01-dmz'
+            tags: [pod03]
+            enabled: true
+            ip_address_virtual: 10.1.13.254/24
+            igmp_snooping_enabled: true
+      #     311:
+      #       name: 'pr01-trust-dhcp'
+      #       tags: ['dc1']
+      #       enabled: true
+      #       ip_address_virtual: 10.3.11.254/24
+      #       igmp_snooping_enabled: true
+      #       ip_helpers:
+      #         1.1.1.1:
+      #           source_interface: lo100
+      # tenant_a_project02:
+      #   ip_helpers:
+      #     1.1.1.1:
+      #       source_interface: lo100
+      #   vrf_vni: 12
+      #   vtep_diagnostic:
+      #     loopback: 100
+      #     loopback_ip_range: 10.2.255.0/24
+      #   svis:
+      #     114:
+      #       name: 'pr02-dmz'
+      #       tags: ['pod01']
+      #       enabled: true
+      #       ip_address_virtual: 10.2.12.254/24
+      #       igmp_snooping: true
+      pure_type5:
+        vrf_vni: 13
+        svis:
+          131:
+            name: vl131_no_vni
+            tags: ['pod01']
+            enabled: true
+            ip_address_virtual: 10.1.31.254/24
+            vxlan: false
+          132:
+            name: vl132_no_vni
+            tags: ['pod02']
+            enabled: true
+            ip_address_virtual: 10.1.32.254/24
+            vxlan: false
+
+# tenant d specific information - pure l2 tenant
+  tenant_b:
+    mac_vrf_vni_base: 20000
+    enable_mlag_ibgp_peering_vrfs: true
+    l2vlans:
+      201:
+        name: 'b-elan-201'
+        tags: ['dc1']
+        igmp_snooping: false
+
+  central_routing_lab:
+    mac_vrf_vni_base: 30000
+    vrfs:
+      central_routing:
+        vrf_vni: 13
+        svis:
+          301:
+            name: 'central_lan_01'
+            tags: ['pod05_node01']
+            enabled: true
+            ip_address_virtual: 10.3.1.254/24
+            # ip_virtual_router_address: 10.3.1.254
+            # nodes:
+            #   eapi-cl01a:
+            #     ip_address: 10.3.1.253/24
+            #   eapi-cl01b:
+            #     ip_address: 10.3.1.252/24
+          302:
+            name: 'central_lan_02'
+            tags: ['pod05_node02', 'pod05_node01']
+            enabled: true
+            ip_address_virtual: 10.3.2.254/24
+            # ip_virtual_router_address: 10.3.2.254
+            # nodes:
+            #   eapi-cl01a:
+            #     ip_address: 10.3.2.253/24
+            #   eapi-cl01b:
+            #     ip_address: 10.3.2.252/24

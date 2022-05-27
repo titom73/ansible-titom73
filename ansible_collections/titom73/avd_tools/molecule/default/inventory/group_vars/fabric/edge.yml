@@ -1,0 +1,30 @@
+edge:
+  defaults:
+    platform: "{{ lab_platform }}"
+    uplink_switches: ['avd-leaf1a', 'avd-leaf1b']
+    uplink_interfaces: ['Ethernet1', 'Ethernet2']
+    mlag_peer_ipv4_pool: 172.31.253.0/31
+    mlag_peer_l3_ipv4_pool: 172.31.253.2/31
+  node_groups:
+    avd_edge_leaf1:
+      uplink_switches: [ avd-leaf1a, avd-leaf1b ]
+      filter:
+        tenants: [ 'tenant_a', 'tenant_b' ]
+        tags: [ 'pod01', 'dc1' ]
+      nodes:
+        avd-agg01:
+          id: 23
+          mgmt_ip: 10.73.254.21/24
+          mac_address: '0c:1d:c0:1d:62:21'
+          uplink_switch_interfaces: [ Ethernet5, Ethernet5 ]
+    avd_edge_leaf2:
+      uplink_switches: [ avd-leaf2a, avd-leaf2b ]
+      filter:
+        tenants: [ 'tenant_a', 'tenant_b' ]
+        tags: [ 'pod02', 'dc1' ]
+      nodes:
+        avd-agg02:
+          id: 24
+          mgmt_ip: 10.73.254.22/24
+          mac_address: '0c:1d:c0:1d:62:22'
+          uplink_switch_interfaces: [ Ethernet5, Ethernet5 ]

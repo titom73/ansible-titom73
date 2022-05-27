@@ -1,0 +1,17 @@
+spine:
+  defaults:
+    platform: "{{ lab_platform }}"
+    bgp_as: 65001
+    loopback_ipv4_pool: 192.168.1.0/24
+    bgp_defaults: '{{bgp_default_settings}}'
+    mlag_peer_ipv4_pool: 172.31.253.0/31
+    mlag_peer_l3_ipv4_pool: 172.31.253.2/31
+  nodes:
+    avd-spine1:
+      id: 1
+      mgmt_ip: 10.73.254.101/24
+      mac_address: '0c:1d:c0:1d:62:01'
+    avd-spine2:
+      id: 2
+      mgmt_ip: 10.73.254.102/24
+      mac_address: '0c:1d:c0:1d:62:02'

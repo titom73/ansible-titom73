@@ -1,0 +1,285 @@
+---
+name: fabric
+
+mgmt:
+  network: 'mgmt-fabric'
+  ipv4_subnet: 10.73.254.0/24
+
+topology:
+  kinds:
+    ceos:
+      image: arista/ceos:4.27.2F
+  nodes:
+    avd-agg01:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.21
+      kind: ceos
+      startup-config: intended/configs/avd-agg01.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9021:443/tcp
+      env:
+        TMODE: lacp
+    avd-agg02:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.22
+      kind: ceos
+      startup-config: intended/configs/avd-agg02.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9022:443/tcp
+      env:
+        TMODE: lacp
+    avd-l2leaf01:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.31
+      kind: ceos
+      startup-config: intended/configs/avd-l2leaf01.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9029:443/tcp
+      env:
+        TMODE: lacp
+    avd-l2leaf02:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.32
+      kind: ceos
+      startup-config: intended/configs/avd-l2leaf02.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9030:443/tcp
+      env:
+        TMODE: lacp
+    avd-bl01a:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.15
+      kind: ceos
+      startup-config: intended/configs/avd-bl01a.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9015:443/tcp
+      env:
+        TMODE: lacp
+    avd-bl01b:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.16
+      kind: ceos
+      startup-config: intended/configs/avd-bl01b.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9016:443/tcp
+      env:
+        TMODE: lacp
+    avd-cl01a:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.19
+      kind: ceos
+      startup-config: intended/configs/avd-cl01a.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9027:443/tcp
+      env:
+        TMODE: lacp
+    avd-cl01b:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.20
+      kind: ceos
+      startup-config: intended/configs/avd-cl01b.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9028:443/tcp
+      env:
+        TMODE: lacp
+    avd-leaf1a:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.11
+      kind: ceos
+      startup-config: intended/configs/avd-leaf1a.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9011:443/tcp
+      env:
+        TMODE: lacp
+    avd-leaf1b:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.12
+      kind: ceos
+      startup-config: intended/configs/avd-leaf1b.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9012:443/tcp
+      env:
+        TMODE: lacp
+    avd-leaf2a:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.13
+      kind: ceos
+      startup-config: intended/configs/avd-leaf2a.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9013:443/tcp
+      env:
+        TMODE: lacp
+    avd-leaf2b:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.14
+      kind: ceos
+      startup-config: intended/configs/avd-leaf2b.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9014:443/tcp
+      env:
+        TMODE: lacp
+    avd-leaf3a:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.17
+      kind: ceos
+      startup-config: intended/configs/avd-leaf3a.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9017:443/tcp
+      env:
+        TMODE: lacp
+    avd-leaf4a:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.18
+      kind: ceos
+      startup-config: intended/configs/avd-leaf4a.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9018:443/tcp
+      env:
+        TMODE: lacp
+    avd-rs01:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.51
+      kind: ceos
+      startup-config: intended/configs/avd-rs01.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9033:443/tcp
+      env:
+        TMODE: lacp
+    avd-rs02:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.52
+      kind: ceos
+      startup-config: intended/configs/avd-rs02.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9034:443/tcp
+      env:
+        TMODE: lacp
+    avd-spine1:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.101
+      kind: ceos
+      startup-config: intended/configs/avd-spine1.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9001:443/tcp
+      env:
+        TMODE: lacp
+    avd-spine2:
+      image: arista/ceos:4.27.2F
+      mgmt_ipv4: 10.73.254.102
+      kind: ceos
+      startup-config: intended/configs/avd-spine2.cfg
+      binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      ports:
+        - 9002:443/tcp
+      env:
+        TMODE: lacp
+    srv-pod01:
+      binds:
+      - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      env:
+          TMODE: lacp
+      image: arista/ceos:4.27.2F
+      kind: ceos
+      mgmt_ipv4: 10.73.254.41
+      startup-config: intended/configs/srv-pod01.cfg
+    srv-pod02:
+      binds:
+      - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      env:
+          TMODE: lacp
+      image: arista/ceos:4.27.2F
+      kind: ceos
+      mgmt_ipv4: 10.73.254.42
+      startup-config: intended/configs/srv-pod02.cfg
+    srv-pod03:
+      binds:
+      - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+      env:
+          TMODE: lacp
+      image: arista/ceos:4.27.2F
+      kind: ceos
+      mgmt_ipv4: 10.73.254.43
+      startup-config: intended/configs/srv-pod03.cfg
+
+  links:
+    - endpoints: ["avd-agg01:eth1", "avd-leaf1a:eth5"]
+    - endpoints: ["avd-agg01:eth2", "avd-leaf1b:eth5"]
+    - endpoints: ["avd-agg02:eth1", "avd-leaf2a:eth5"]
+    - endpoints: ["avd-agg02:eth2", "avd-leaf2b:eth5"]
+    - endpoints: ["avd-l2leaf01:eth1", "avd-spine1:eth11"]
+    - endpoints: ["avd-l2leaf01:eth2", "avd-spine2:eth11"]
+    - endpoints: ["avd-l2leaf01:eth7", "avd-l2leaf02:eth7"]
+    - endpoints: ["avd-l2leaf01:eth8", "avd-l2leaf02:eth8"]
+    - endpoints: ["avd-l2leaf02:eth1", "avd-spine1:eth12"]
+    - endpoints: ["avd-l2leaf02:eth2", "avd-spine2:eth12"]
+    - endpoints: ["avd-bl01a:eth1", "avd-spine1:eth5"]
+    - endpoints: ["avd-bl01a:eth2", "avd-spine2:eth5"]
+    - endpoints: ["avd-bl01a:eth7", "avd-bl01b:eth7"]
+    - endpoints: ["avd-bl01a:eth8", "avd-bl01b:eth8"]
+    - endpoints: ["avd-bl01b:eth1", "avd-spine1:eth6"]
+    - endpoints: ["avd-bl01b:eth2", "avd-spine2:eth6"]
+    - endpoints: ["avd-cl01a:eth1", "avd-spine1:eth9"]
+    - endpoints: ["avd-cl01a:eth2", "avd-spine2:eth9"]
+    - endpoints: ["avd-cl01a:eth7", "avd-cl01b:eth7"]
+    - endpoints: ["avd-cl01a:eth8", "avd-cl01b:eth8"]
+    - endpoints: ["avd-cl01b:eth1", "avd-spine1:eth10"]
+    - endpoints: ["avd-cl01b:eth2", "avd-spine2:eth10"]
+    - endpoints: ["avd-leaf1a:eth1", "avd-spine1:eth1"]
+    - endpoints: ["avd-leaf1a:eth2", "avd-spine2:eth1"]
+    - endpoints: ["avd-leaf1a:eth7", "avd-leaf1b:eth7"]
+    - endpoints: ["avd-leaf1a:eth8", "avd-leaf1b:eth8"]
+    - endpoints: ["avd-leaf1b:eth1", "avd-spine1:eth2"]
+    - endpoints: ["avd-leaf1b:eth2", "avd-spine2:eth2"]
+    - endpoints: ["avd-leaf2a:eth1", "avd-spine1:eth3"]
+    - endpoints: ["avd-leaf2a:eth2", "avd-spine2:eth3"]
+    - endpoints: ["avd-leaf2a:eth7", "avd-leaf2b:eth7"]
+    - endpoints: ["avd-leaf2a:eth8", "avd-leaf2b:eth8"]
+    - endpoints: ["avd-leaf2b:eth1", "avd-spine1:eth4"]
+    - endpoints: ["avd-leaf2b:eth2", "avd-spine2:eth4"]
+    - endpoints: ["avd-leaf3a:eth1", "avd-spine1:eth7"]
+    - endpoints: ["avd-leaf3a:eth2", "avd-spine2:eth7"]
+    - endpoints: ["avd-leaf3a:eth7", "avd-leaf4a:eth7"]
+    - endpoints: ["avd-leaf3a:eth8", "avd-leaf4a:eth8"]
+    - endpoints: ["avd-leaf4a:eth1", "avd-spine1:eth8"]
+    - endpoints: ["avd-leaf4a:eth2", "avd-spine2:eth8"]
+    - endpoints: ["avd-rs01:eth1", "avd-spine1:eth13"]
+    - endpoints: ["avd-rs02:eth1", "avd-spine2:eth13"]
+    - endpoints: ['srv-pod01:eth1', 'avd-agg01:eth3']
+    - endpoints: ['srv-pod02:eth1', 'avd-agg02:eth3']
+    - endpoints: ['srv-pod03:eth1', 'avd-leaf3a:eth5']
+    - endpoints: ['srv-pod03:eth2', 'avd-leaf4a:eth5']

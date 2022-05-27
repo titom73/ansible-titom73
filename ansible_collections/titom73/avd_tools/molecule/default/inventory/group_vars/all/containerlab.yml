@@ -1,0 +1,55 @@
+clab_runner_eos: arista/ceos:4.27.2F
+clab_management_network: 10.73.254.0/24
+
+clab_nodes:
+  srv-pod01:
+    kind: ceos
+    image: "{{ clab_runner_eos }}"
+    startup-config: intended/configs/srv-pod01.cfg
+    mgmt_ipv4: 10.73.254.41
+    env:
+      TMODE: lacp
+    binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+
+  srv-pod02:
+    kind: ceos
+    image: "{{ clab_runner_eos }}"
+    startup-config: intended/configs/srv-pod02.cfg
+    mgmt_ipv4: 10.73.254.42
+    env:
+      TMODE: lacp
+    binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+
+  srv-pod03:
+    kind: ceos
+    image: "{{ clab_runner_eos }}"
+    startup-config: intended/configs/srv-pod03.cfg
+    mgmt_ipv4: 10.73.254.43
+    env:
+      TMODE: lacp
+    binds:
+        - /etc/sysctl.d/99-zceos.conf:/etc/sysctl.d/99-zceos.conf:ro
+
+#   # tls-management:
+#   #     image: "{{ clab_runner_eos }}"
+#   #     mgmt_ipv4: 10.126.51.250
+#   #     kind: ceos
+#   #     startup-config: intended/configs/eos-jump.cfg
+#   #     publish:
+#   #     - tcp/22/tgrimonet@arista.com
+#   #     env:
+#   #       TMODE: lacp
+
+#   # mysocketio:
+#   #   kind: mysocketio
+#   #   image: ghcr.io/hellt/mysocketctl:0.5.0
+#   #   binds:
+#   #     - .mysocketio_token:/root/.mysocketio_token
+
+clab_links:
+ - endpoints: ["srv-pod01:eth1", "avd-agg01:eth3"]
+ - endpoints: ["srv-pod02:eth1", "avd-agg02:eth3"]
+ - endpoints: ["srv-pod03:eth1", "avd-leaf3a:eth5"]
+ - endpoints: ["srv-pod03:eth2", "avd-leaf4a:eth5"]

@@ -1,0 +1,25 @@
+vlans:
+  110:
+    tenant: tenant_a
+    name: pr01-demo
+  111:
+    tenant: tenant_a
+    name: pr01-trust
+  112:
+    tenant: tenant_a
+    name: pr01-trust
+  131:
+    tenant: tenant_a
+    name: pure_type05_vl01
+  132:
+    tenant: tenant_a
+    name: pure_type05_vl02
+  201:
+    tenant: tenant_b
+    name: b-elan-201
+  301:
+    tenant: central_routing_lab
+    name: central_lan_01
+  302:
+    tenant: central_routing_lab
+    name: central_lan_02
